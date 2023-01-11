@@ -1,0 +1,33 @@
+I spent 3 days optimizing an API endpoint to make it 15x faster.
+
+Here are my secrets.
+
+I faced an issue with an API endpoint for an e-commerce web application that was not scaling well.
+
+The endpoint was responsible for calculating a report and it needed to communicate with multiple modules (services) to gather the necessary data, combine it, and perform the calculations.
+
+I will be breaking down the steps I took to achieve a 15x performance improvement.
+
+The first step I took was to identify the bottlenecks in the system.
+
+When it comes to performance optimization, it's essential to identify the slowest piece of the code, as fixing this will usually give you the most significant improvement. Once you have identified and fixed the first bottleneck, it often reveals the next bottleneck. This is a continuous process and requires constant monitoring and measurement. In my case, the bottlenecks were:
+• Calling the database from a loop
+• Calling an external service multiple times
+• Executing a complex calculation multiple times with identical parameters
+
+Measuring performance is also a crucial step in the optimization process. You can use simple approaches like manually logging execution times between method calls using System.Timers.Timer or use a performance profiler.
+
+The next step I took was to reduce the number of round trips.
+
+A round trip between your application and a database or service can last anywhere between 5-10ms or more. When you have many round trips in your flow, it quickly adds up and causes delays. Here are a few things you can do to reduce the number of round trips:
+• Don't call the database from a loop. Instead, use a simple query like "SELECT * FROM [TableName] WHERE Id IN (list_of_ids)"
+• Use a query that returns multiple results sets from the database
+• If you need to make multiple calls to another service, try to convert that into one call and have the service aggregate the required data and return everything at once.
+
+Another step I took was to parallelize external calls.
+
+In my situation, I had multiple asynchronous calls to different services with no dependencies between them. I used the Task.WhenAll method, which allows you to run multiple tasks in parallel. This simple technique helped me achieve significant performance improvement.
+
+Lastly, I considered caching as a last resort after trying all other possibilities to improve performance.
+
+Caching is an effective way to speed up an application, but it can introduce unwanted behavior when the data is stale. When implementing caching, it's important to consider the duration of the cache and the strategies to clear the cache when the underlying data changes. For simple applications, I used the IMemoryCache that is available in ASP .NET Core out of the box, but you can also use an external cache like Redis.
